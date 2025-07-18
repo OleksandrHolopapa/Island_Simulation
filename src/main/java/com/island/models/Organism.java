@@ -1,5 +1,10 @@
 package com.island.models;
 
-public interface Organism {
+import java.util.List;
 
+public interface Organism {
+    double getWeight();
+    int getMaxPopulation();
+
+    void reproduce(List<Organism> possiblePartners);
 }
