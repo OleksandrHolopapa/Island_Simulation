@@ -7,5 +7,16 @@ public enum Organisms {
     FOX,
     RABBIT,
     HORSE,
+    BOA,
+    BEAR,
+    EAGLE,
+    MOUSE,
+    DEER,
+    BOAR,
+    BUFFALO,
+    SHEEP,
+    CATERPILLAR,
+    DUCK,
+    GOAT,
     GRASS
 }

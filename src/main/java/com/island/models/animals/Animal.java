@@ -34,12 +34,13 @@ public abstract class Animal implements Organism {
         for (Map.Entry<String, List<Organism>> entry : possibleVictims.entrySet()) {
             String victimSimpleName = entry.getKey();
             int possibilityToEatValue = TableService.getPossibilityToEatValue(this.getClass().getSimpleName(), victimSimpleName);
-            //Перевіряємо, чи тварина може з'їсти організм-жертву та, чи є кого їсти
+            //Перевіряємо, чи тварина може з'їсти організм-жертву та, чи ще є кого їсти
             if ((possibilityToEatValue > 0) && (!entry.getValue().isEmpty())) {
                 //визначаємо успіх полювання
                 if (ThreadLocalRandom.current().nextInt(101) <= possibilityToEatValue) {
                     Organism victim = entry.getValue().getLast();
-                    this.weight += Math.min(this.maxCanEat, victim.getWeight());
+                    double victimWeight = victim.getWeight();
+                    this.weight += Math.min(this.maxCanEat, victimWeight);
                     //Якщо жертва - рослина, то вона втрачає масу, якщо тварина - видаляємо.
                     if (victim instanceof Plant plant) {
                         plant.setWeight(plant.getWeight() - this.maxCanEat);
@@ -49,7 +50,7 @@ public abstract class Animal implements Organism {
             }
         }
         //постійна втрата ваги тварини
-        this.weight -= 1.2 * maxCanEat;
+        this.weight -= this.maxCanEat;
     }
 
     @Override
