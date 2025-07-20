@@ -19,8 +19,7 @@ public class FoodService implements Service {
                 }
             }
             executor.shutdown();
-            boolean awaited = executor.awaitTermination(1, TimeUnit.SECONDS);
-            System.out.println("FoodService finished: "+awaited);
+            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) System.out.println("FoodService needs more time!!!");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

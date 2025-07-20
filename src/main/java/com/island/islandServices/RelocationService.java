@@ -22,14 +22,15 @@ public class RelocationService implements Service {
                 }
             }
             executor.shutdown();
-            boolean awaited = executor.awaitTermination(1, TimeUnit.SECONDS);
-            System.out.println("RelocationService finished: "+awaited);
+            if(!executor.awaitTermination(3, TimeUnit.SECONDS)) System.out.println("RelocationService needs more time!!!");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void startRelocation(Location[][] locations, Location currentLocation, int currentX, int currentY){
+    //Даний метод synchronized, бо в іншому випадку програма видає неправильні дані. Можливо через те,
+    //що Location[][] locations є спільним об'єктом при використанні потоків.
+    private synchronized void startRelocation(Location[][] locations, Location currentLocation, int currentX, int currentY){
         ConcurrentHashMap<String, List<Organism>> organismsInLocation = currentLocation.getOrganismsInLocation();
         for (List<Organism> value : organismsInLocation.values()) {
             for (int i = value.size()-1; i >= 0; i--) {

@@ -19,8 +19,7 @@ public class RebootingService implements Service {
                 }
             }
             executor.shutdown();
-            boolean awaited = executor.awaitTermination(1, TimeUnit.SECONDS);
-            System.out.println("RebootingService finished: "+awaited);
+            if(!executor.awaitTermination(3, TimeUnit.SECONDS)) System.out.println("RebootingService needs more time!!!");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

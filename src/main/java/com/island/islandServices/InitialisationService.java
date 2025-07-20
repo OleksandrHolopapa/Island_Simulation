@@ -16,12 +16,10 @@ public class InitialisationService implements Service {
             for (Location[] locationArray : locations) {
                 for (Location location : locationArray) {
                     executor.submit(()->addOrganismsToLocation(location));
-                    //System.out.println("DONE");
                 }
             }
             executor.shutdown();
-            boolean awaited = executor.awaitTermination(1, TimeUnit.SECONDS);
-            System.out.println("Initialisation finished: "+awaited);
+            if(!executor.awaitTermination(3, TimeUnit.SECONDS)) System.out.println("InitialisationService needs more time!!!");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

@@ -19,8 +19,7 @@ public class DeathService implements Service {
                 }
             }
             executor.shutdown();
-            boolean awaited = executor.awaitTermination(1, TimeUnit.SECONDS);
-            System.out.println("DeathService finished: "+awaited);
+            if(!executor.awaitTermination(2, TimeUnit.SECONDS)) System.out.println("DeathService needs more time!!!");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -29,11 +28,10 @@ public class DeathService implements Service {
     private void deathByStarvation(Location location){
         ConcurrentHashMap<String, List<Organism>> organismsInLocation = location.getOrganismsInLocation();
         for (List<Organism> organisms : organismsInLocation.values()) {
-            for (int i = 0; i < organisms.size(); i++) {
+            for (int i = organisms.size()-1; i>=0; i--) {
                 Organism organism = organisms.get(i);
                 if((organism instanceof Animal animal)&&(animal.getWeight()<=0)) {
                     organisms.remove(animal);
-                    i--;
                 }
             }
         }
