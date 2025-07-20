@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class IslandEngine {
-    boolean simulationStopped = false;
-    int currentDay = 1;
+    private int currentDay = 1;
     private int reproducePeriod = 2;
     private final Island island;
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
@@ -27,7 +26,7 @@ public class IslandEngine {
     }
 
     private void runCircle(){
-        System.out.println("========= DAY №"+currentDay+" ==========");
+        System.out.println("========= DAY №"+(currentDay++)+" ==========");
         island.startService(new FoodService());
         island.startService(new DeathService());
         //розмноження раз на два цикли
@@ -36,12 +35,11 @@ public class IslandEngine {
         island.startService(new RebootingService());
         island.showIslandStatistic();
         stopSimulation();
-        if(simulationStopped) {
+        if(stopSimulation()) {
             future.cancel(false); executorService.shutdown();
             System.out.println("All the animals died!!!");
         }
         changeReproductionPeriod();
-        changeDay();
     }
 
     private void changeReproductionPeriod(){
@@ -49,12 +47,8 @@ public class IslandEngine {
         if(reproducePeriod==0) reproducePeriod = 2;
     }
 
-    private void changeDay(){
-        currentDay++;
-    }
-
-    private void stopSimulation() {
-        simulationStopped = true;
+    private boolean stopSimulation() {
+        boolean simulationStopped = true;
         for (Location[] locations : island.getLocations()) {
             for (Location location : locations) {
                 ConcurrentHashMap<String, List<Organism>> organismsInLocation = location.getOrganismsInLocation();
@@ -63,5 +57,6 @@ public class IslandEngine {
                 }
             }
         }
+        return simulationStopped;
     }
 }
