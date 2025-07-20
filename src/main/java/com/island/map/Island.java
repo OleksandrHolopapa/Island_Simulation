@@ -1,8 +1,10 @@
 package com.island.map;
 
 import com.island.models.Organism;
-import com.island.utils.islandServices.InitialisationService;
+import com.island.islandServices.InitialisationService;
+import com.island.islandServices.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,10 +23,6 @@ public class Island {
                 locations[i][j] = new Location();
             }
         }
-    }
-
-    public void islandInitialisation(){
-        InitialisationService.initialize(locations);
     }
 
     public synchronized Location[][] getLocations() {
@@ -55,6 +53,23 @@ public class Island {
     }
 
     public void showIslandStatistic() {
+        Map<String, Integer> organismsOnIsland = new HashMap<>();
+        for (Location[] location : locations) {
+            for (Location currentLocation : location) {
+                ConcurrentHashMap<String, List<Organism>> organismsInLocation = currentLocation.getOrganismsInLocation();
+                for (Map.Entry<String, List<Organism>> entry : organismsInLocation.entrySet()) {
+                    if(organismsOnIsland.containsKey(entry.getKey())){
+                        Integer i = organismsOnIsland.get(entry.getKey());
+                        i += entry.getValue().size();
+                        organismsOnIsland.put(entry.getKey(), i);
+                    } else organismsOnIsland.put(entry.getKey(), entry.getValue().size());
+                }
+            }
+        }
+        System.out.println(organismsOnIsland);
+    }
 
+    public void startService(Service service) {
+        service.run(locations);
     }
 }

@@ -1,4 +1,4 @@
-package com.island.utils.islandServices;
+package com.island.islandServices;
 
 import com.island.map.Location;
 import com.island.models.Organism;
@@ -10,15 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class InitialisationService {
-    public static void initialize(Location[][] locations) {
-        ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-        for (Location[] locationArray : locations) {
-            for (Location location : locationArray) {
-                executor.submit(()->addOrganismsToLocation(location));
+public class InitialisationService implements Service {
+    public void run(Location[][] locations) {
+        try (ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
+            for (Location[] locationArray : locations) {
+                for (Location location : locationArray) {
+                    executor.submit(()->addOrganismsToLocation(location));
+                    //System.out.println("DONE");
+                }
             }
-        }
-        try {
             executor.shutdown();
             boolean awaited = executor.awaitTermination(1, TimeUnit.SECONDS);
             System.out.println("Initialisation finished: "+awaited);
@@ -27,7 +27,7 @@ public class InitialisationService {
         }
     }
 
-    private static void addOrganismsToLocation(Location location) {
+    private void addOrganismsToLocation(Location location) {
         ConcurrentHashMap<String, List<Organism>> organismsInLocation = new ConcurrentHashMap<>();
         for (Organisms organismEnumValue : Organisms.values()) {
             //З ймовірністю 60% організм буде в локації
@@ -40,7 +40,7 @@ public class InitialisationService {
         location.getOrganismsInLocation().putAll(organismsInLocation);
     }
 
-    private static List<Organism> getIdenticalOrganismsList(Organism organism, Organisms organismEnumValue){
+    private List<Organism> getIdenticalOrganismsList(Organism organism, Organisms organismEnumValue){
         List<Organism> identicalOrganismsInLocation = new ArrayList<>();
         identicalOrganismsInLocation.add(organism);
         int numberOfIdenticalOrganismsInLocation = getNumberOfIdenticalOrganismsInLocation(organism.getMaxPopulation());
@@ -58,11 +58,11 @@ public class InitialisationService {
         return identicalOrganismsInLocation;
     }
 
-    private static boolean organismIsPresentInLocation(int opportunityToBePresent){
+    private boolean organismIsPresentInLocation(int opportunityToBePresent){
         return ThreadLocalRandom.current().nextInt(101) <= opportunityToBePresent;
     }
 
-    private static int getNumberOfIdenticalOrganismsInLocation(int maxPopulation){
+    private int getNumberOfIdenticalOrganismsInLocation(int maxPopulation){
         return ThreadLocalRandom.current().nextInt(1, maxPopulation+1);
     }
 }

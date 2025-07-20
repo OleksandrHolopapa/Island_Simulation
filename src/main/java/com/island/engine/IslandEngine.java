@@ -1,48 +1,52 @@
 package com.island.engine;
 
+import com.island.islandServices.*;
 import com.island.map.Island;
 import com.island.map.Location;
-import com.island.utils.islandServices.*;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public class IslandEngine {
+    private int reproducePeriod = 2;
     private final Island island;
+    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+    private ScheduledFuture<?> future;
 
     public IslandEngine(Island island) {
         this.island = island;
     }
 
     public void startSimulation(){
-        //TODO
-        runCircle();
-    }
-
-    public void runCircle(){
-        try(ExecutorService service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
-            for (int i = 0; i < island.getLength(); i++) {
-                for (int j = 0; j < island.getHeight(); j++) {
-                    int currentX = i;
-                    int currentY = j;
-                    Location location = island.getLocations()[i][j];
-                    service.submit(
-                            ()->{
-                                FoodService.timeToEat(location);
-                                DeathService.deathByStarvation(location);
-                                ReproduceService.timeToReproduce(location);
-                                RelocationService.startRelocation(island, location, currentX, currentY);
-                                RebootingService.rebootAnimalsStats(location);
-                            }
-                            );
-                    System.out.println("location "+i+":"+j+" in work...");
-                }
-            }
-            service.shutdown();
-            System.out.println("Всі потоки виконалися: "+service.awaitTermination(2, TimeUnit.SECONDS));
+        island.startService(new InitialisationService());
+        island.showOrganismCountInLocations();
+        future = executorService.scheduleWithFixedDelay(this::runCircle, 0, 500, TimeUnit.MILLISECONDS);
+        try {
+            //після 5 хв симуляція зупиниться
+            //погана ідея
+            Thread.sleep(60_000);
+            future.cancel(false);
+            executorService.shutdown();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void runCircle(){
+        int period = reproducePeriod;
+        island.startService(new FoodService());
+        island.startService(new DeathService());
+        //розмноження раз на два цикли
+        if(period == 1) island.startService(new ReproduceService());
+        island.startService(new RelocationService());
+        island.startService(new RebootingService());
+        island.showIslandStatistic();
+        //if(period==3) {future.cancel(false); executorService.shutdown(); Thread.currentThread().interrupt();}
+        changeReproductionPeriod();
+        System.out.println("======================================================================================");
+    }
+
+    private void changeReproductionPeriod(){
+        reproducePeriod--;
+        if(reproducePeriod==0) reproducePeriod = 2;
     }
 }
