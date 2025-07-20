@@ -3,10 +3,15 @@ package com.island.engine;
 import com.island.islandServices.*;
 import com.island.map.Island;
 import com.island.map.Location;
+import com.island.models.Organism;
+import com.island.models.animals.Animal;
 
+import java.util.List;
 import java.util.concurrent.*;
 
 public class IslandEngine {
+    boolean simulationStopped = false;
+    int currentDay = 1;
     private int reproducePeriod = 2;
     private final Island island;
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
@@ -18,35 +23,45 @@ public class IslandEngine {
 
     public void startSimulation(){
         island.startService(new InitialisationService());
-        island.showOrganismCountInLocations();
         future = executorService.scheduleWithFixedDelay(this::runCircle, 0, 500, TimeUnit.MILLISECONDS);
-        try {
-            //після 5 хв симуляція зупиниться
-            //погана ідея
-            Thread.sleep(60_000);
-            future.cancel(false);
-            executorService.shutdown();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private void runCircle(){
-        int period = reproducePeriod;
+        System.out.println("========= DAY №"+currentDay+" ==========");
         island.startService(new FoodService());
         island.startService(new DeathService());
         //розмноження раз на два цикли
-        if(period == 1) island.startService(new ReproduceService());
+        if(reproducePeriod == 1) island.startService(new ReproduceService());
         island.startService(new RelocationService());
         island.startService(new RebootingService());
         island.showIslandStatistic();
-        //if(period==3) {future.cancel(false); executorService.shutdown(); Thread.currentThread().interrupt();}
+        stopSimulation();
+        if(simulationStopped) {
+            future.cancel(false); executorService.shutdown();
+            System.out.println("All the animals died!!!");
+        }
         changeReproductionPeriod();
-        System.out.println("======================================================================================");
+        changeDay();
     }
 
     private void changeReproductionPeriod(){
         reproducePeriod--;
         if(reproducePeriod==0) reproducePeriod = 2;
+    }
+
+    private void changeDay(){
+        currentDay++;
+    }
+
+    private void stopSimulation() {
+        simulationStopped = true;
+        for (Location[] locations : island.getLocations()) {
+            for (Location location : locations) {
+                ConcurrentHashMap<String, List<Organism>> organismsInLocation = location.getOrganismsInLocation();
+                for (List<Organism> value : organismsInLocation.values()) {
+                    if((!value.isEmpty()) && (value.getLast() instanceof Animal)) simulationStopped = false;
+                }
+            }
+        }
     }
 }

@@ -5,10 +5,8 @@ import com.island.map.Island;
 
 public class Main {
     public static void main(String[] args) {
-        Island island = new Island(100,20);
+        Island island = new Island(100 ,20);
         IslandEngine engine = new IslandEngine(island);
         engine.startSimulation();
-        //System.out.println("After--------------------------------------------------------------------");
-        //island.showOrganismCountInLocations();
     }
 }
