@@ -25,10 +25,6 @@ public abstract class Plant implements Organism {
         return weight;
     }
 
-    public double getTotalWeight() {
-        return totalWeight;
-    }
-
     @Override
     public int getMaxPopulation() {
         return maxPopulation;
