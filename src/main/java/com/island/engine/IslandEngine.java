@@ -42,8 +42,7 @@ public class IslandEngine {
     }
 
     private void changeReproductionPeriod(){
-        reproducePeriod--;
-        if(reproducePeriod==0) reproducePeriod = 2;
+        reproducePeriod = reproducePeriod==2 ? 1:2;
     }
 
     private boolean stopSimulation() {
