@@ -4,6 +4,7 @@ import com.island.map.Location;
 import com.island.models.Organism;
 import com.island.models.animals.Animal;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -13,11 +14,9 @@ import java.util.concurrent.TimeUnit;
 public class DeathService implements Service {
     public void run(Location[][] locations) {
         try (ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
-            for (Location[] locationArray : locations) {
-                for (Location location : locationArray) {
-                    executor.submit(()->deathByStarvation(location));
-                }
-            }
+            Arrays.stream(locations)
+                    .forEach(locationArray->Arrays.stream(locationArray)
+                            .forEach(location -> executor.submit(()->deathByStarvation(location))));
             executor.shutdown();
             if(!executor.awaitTermination(2, TimeUnit.SECONDS)) System.out.println("DeathService needs more time!!!");
         } catch (InterruptedException e) {

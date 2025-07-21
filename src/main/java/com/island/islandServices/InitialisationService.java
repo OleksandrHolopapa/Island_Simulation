@@ -7,17 +7,16 @@ import com.island.utils.factory.Organisms;
 import com.island.utils.factory.OrganismFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
 public class InitialisationService implements Service {
     public void run(Location[][] locations) {
         try (ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
-            for (Location[] locationArray : locations) {
-                for (Location location : locationArray) {
-                    executor.submit(()->addOrganismsToLocation(location));
-                }
-            }
+            Arrays.stream(locations)
+                    .forEach(locationArray->Arrays.stream(locationArray)
+                            .forEach(location -> executor.submit(()->addOrganismsToLocation(location))));
             executor.shutdown();
             if(!executor.awaitTermination(3, TimeUnit.SECONDS)) System.out.println("InitialisationService needs more time!!!");
         } catch (InterruptedException e) {

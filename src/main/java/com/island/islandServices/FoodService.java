@@ -4,6 +4,7 @@ import com.island.map.Location;
 import com.island.models.Organism;
 import com.island.models.animals.Animal;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -13,11 +14,9 @@ import java.util.concurrent.TimeUnit;
 public class FoodService implements Service {
     public void run(Location[][] locations) {
         try (ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
-            for (Location[] locationArray : locations) {
-                for (Location location : locationArray) {
-                    executor.submit(()->timeToEat(location));
-                }
-            }
+            Arrays.stream(locations)
+                    .forEach(locationArray->Arrays.stream(locationArray)
+                            .forEach(location -> executor.submit(()->timeToEat(location))));
             executor.shutdown();
             if(!executor.awaitTermination(10, TimeUnit.SECONDS)) System.out.println("FoodService needs more time!!!");
         } catch (InterruptedException e) {
