@@ -11,7 +11,7 @@ import java.util.concurrent.*;
 
 public class IslandEngine {
     private int currentDay = 1;
-    private int reproducePeriod = 2;
+    private int reproducePeriod = 1;
     private final Island island;
     private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> future;
@@ -28,7 +28,7 @@ public class IslandEngine {
     private void runCircle(){
         island.startService(new FoodService());
         island.startService(new DeathService());
-        if(reproducePeriod == 1) island.startService(new ReproduceService());
+        if(reproducePeriod++ % 2 == 0) island.startService(new ReproduceService());
         island.startService(new RelocationService());
         island.startService(new RebootingService());
         System.out.println("========= DAY №"+(currentDay++)+" ==========");
@@ -38,11 +38,6 @@ public class IslandEngine {
             future.cancel(false); executorService.shutdown();
             System.out.println("All the animals died!!!");
         }
-        changeReproductionPeriod();
-    }
-
-    private void changeReproductionPeriod(){
-        reproducePeriod = reproducePeriod==2 ? 1:2;
     }
 
     private boolean stopSimulation() {
