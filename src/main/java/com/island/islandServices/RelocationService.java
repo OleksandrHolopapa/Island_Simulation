@@ -28,8 +28,6 @@ public class RelocationService implements Service {
         }
     }
 
-    //Даний метод synchronized, бо в іншому випадку програма видає неправильні дані. Можливо через те,
-    //що Location[][] locations є спільним об'єктом при використанні потоків.
     private synchronized void startRelocation(Location[][] locations, Location currentLocation, int currentX, int currentY){
         ConcurrentHashMap<String, List<Organism>> organismsInLocation = currentLocation.getOrganismsInLocation();
         for (List<Organism> value : organismsInLocation.values()) {

@@ -28,7 +28,6 @@ public class InitialisationService implements Service {
     private void addOrganismsToLocation(Location location) {
         ConcurrentHashMap<String, List<Organism>> organismsInLocation = new ConcurrentHashMap<>();
         for (Organisms organismEnumValue : Organisms.values()) {
-            //З ймовірністю 60% організм буде в локації
             if(organismIsPresentInLocation(60)){
                 Organism organism = OrganismFactory.getOrganism(organismEnumValue.toString());
                 List<Organism> identicalOrganismsInLocation = getIdenticalOrganismsList(organism, organismEnumValue);

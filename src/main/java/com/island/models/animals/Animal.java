@@ -34,14 +34,11 @@ public abstract class Animal implements Organism {
         for (Map.Entry<String, List<Organism>> entry : possibleVictims.entrySet()) {
             String victimSimpleName = entry.getKey();
             int possibilityToEatValue = TableService.getPossibilityToEatValue(this.getClass().getSimpleName(), victimSimpleName);
-            //Перевіряємо, чи тварина може з'їсти організм-жертву та, чи ще є кого їсти
             if ((possibilityToEatValue > 0) && (!entry.getValue().isEmpty())) {
-                //визначаємо успіх полювання
                 if (ThreadLocalRandom.current().nextInt(101) <= possibilityToEatValue) {
                     Organism victim = entry.getValue().getLast();
                     double victimWeight = victim.getWeight();
                     this.weight += Math.min(this.maxCanEat, victimWeight);
-                    //Якщо жертва - рослина, то вона втрачає масу, якщо тварина - видаляємо.
                     if (victim instanceof Plant plant) {
                         plant.setWeight(plant.getWeight() - this.maxCanEat);
                     } else {entry.getValue().removeLast();}
@@ -49,7 +46,6 @@ public abstract class Animal implements Organism {
                 break;
             }
         }
-        //постійна втрата ваги тварини
         this.weight -= this.maxCanEat;
     }
 
@@ -76,14 +72,12 @@ public abstract class Animal implements Organism {
             int destinationX = currentX;
             int destinationY = currentY;
             switch (ThreadLocalRandom.current().nextInt(4)) {
-                //нові значення не повинні виходити за розмір масиву
                 case 0 -> destinationY = Math.max(0, currentY - distance);
                 case 1 -> destinationX = Math.min(locations.length-1, currentX + distance);
                 case 2 -> destinationY = Math.min(locations[currentX].length-1, currentY + distance);
                 case 3 -> destinationX = Math.max(0, currentX - distance);
             }
             this.alreadyMoved.set(true);
-            //Перевірка зміни локації
             if((currentX!=destinationX) || (currentY!=destinationY)) {
                 goToNewLocation(this, location, destinationX, destinationY, locations);
             }
@@ -95,14 +89,12 @@ public abstract class Animal implements Organism {
         ConcurrentHashMap<String, List<Organism>> organismsInCurrentLocation = currentLocation.getOrganismsInLocation();
         ConcurrentHashMap<String, List<Organism>> organismsInNewLocation = locations[destinationX][destinationY].getOrganismsInLocation();
         List<Organism> organisms = organismsInNewLocation.get(organismSimpleName);
-        //Перевіряємо, чи в локації призначення є ідентичні тварини.
         if(organisms == null) {
             organisms = new ArrayList<>();
             organisms.add(organism);
             organismsInNewLocation.put(organismSimpleName, organisms);
             organismsInCurrentLocation.get(organismSimpleName).remove(organism);
         }
-        // Якщо ідентичних тварин максимум, переміщення не відбувається
         else if (organisms.size() < organism.getMaxPopulation()) {
             organisms.add(organism);
             organismsInCurrentLocation.get(organismSimpleName).remove(organism);

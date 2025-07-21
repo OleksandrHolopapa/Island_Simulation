@@ -26,13 +26,12 @@ public class IslandEngine {
     }
 
     private void runCircle(){
-        System.out.println("========= DAY №"+(currentDay++)+" ==========");
         island.startService(new FoodService());
         island.startService(new DeathService());
-        //розмноження раз на два цикли
         if(reproducePeriod == 1) island.startService(new ReproduceService());
         island.startService(new RelocationService());
         island.startService(new RebootingService());
+        System.out.println("========= DAY №"+(currentDay++)+" ==========");
         island.showIslandStatistic();
         stopSimulation();
         if(stopSimulation()) {

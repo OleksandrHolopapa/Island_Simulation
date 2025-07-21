@@ -14,7 +14,6 @@ public abstract class Plant implements Organism {
         this.maxPopulation = maxPopulation;
     }
 
-    //Рослина просто відновлюється
     @Override
     public void reproduce(List<Organism> possiblePartners) {
         this.weight = this.totalWeight;
