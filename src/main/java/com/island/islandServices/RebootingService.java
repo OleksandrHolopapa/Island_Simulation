@@ -18,10 +18,9 @@ public class RebootingService implements Service {
                     .forEach(locationArray->Arrays.stream(locationArray)
                             .forEach(location -> executor.submit(()->rebootAnimalsStats(location))));
             executor.shutdown();
-            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) throw new NotEnoughTimeToProcess("RebootingService");
-        } catch (NotEnoughTimeToProcess e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
+            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) throw new NotEnoughTimeToProcessException("RebootingService");
+        } catch (NotEnoughTimeToProcessException e) {
+            System.err.println(e.getMessage());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

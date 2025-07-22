@@ -18,10 +18,9 @@ public class DeathService implements Service {
                     .forEach(locationArray->Arrays.stream(locationArray)
                             .forEach(location -> executor.submit(()->deathByStarvation(location))));
             executor.shutdown();
-            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) throw new NotEnoughTimeToProcess("DeathService");
-        } catch (NotEnoughTimeToProcess e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
+            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) throw new NotEnoughTimeToProcessException("DeathService");
+        } catch (NotEnoughTimeToProcessException e) {
+            System.err.println(e.getMessage());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

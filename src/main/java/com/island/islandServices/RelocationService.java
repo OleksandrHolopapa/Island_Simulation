@@ -22,10 +22,9 @@ public class RelocationService implements Service {
                 }
             }
             executor.shutdown();
-            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) throw new NotEnoughTimeToProcess("RelocationService");
-        } catch (NotEnoughTimeToProcess e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
+            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) throw new NotEnoughTimeToProcessException("RelocationService");
+        } catch (NotEnoughTimeToProcessException e) {
+            System.err.println(e.getMessage());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
