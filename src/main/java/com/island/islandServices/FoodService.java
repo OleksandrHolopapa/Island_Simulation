@@ -18,8 +18,11 @@ public class FoodService implements Service {
                     .forEach(locationArray->Arrays.stream(locationArray)
                             .forEach(location -> executor.submit(()->timeToEat(location))));
             executor.shutdown();
-            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) System.out.println("FoodService needs more time!!!");
-        } catch (InterruptedException e) {
+            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) throw new NotEnoughTimeToProcess("FoodService");
+        } catch (NotEnoughTimeToProcess e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
