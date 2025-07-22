@@ -42,7 +42,6 @@ public class InitialisationService implements Service {
         List<Organism> identicalOrganismsInLocation = new ArrayList<>();
         identicalOrganismsInLocation.add(organism);
         int numberOfIdenticalOrganismsInLocation = getNumberOfIdenticalOrganismsInLocation(organism.getMaxPopulation());
-        //Рослина в списку завжди одна, збільшується тільки її маса
         if(organism instanceof Plant plant) {
             double plantWeight = numberOfIdenticalOrganismsInLocation * plant.getWeight();
             plant.setTotalWeight(plantWeight);
