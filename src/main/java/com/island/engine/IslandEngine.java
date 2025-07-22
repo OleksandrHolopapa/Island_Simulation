@@ -32,7 +32,6 @@ public class IslandEngine {
         island.startService(new RebootingService());
         System.out.println("========= DAY №"+(currentDay++)+" ==========");
         island.showIslandStatistic();
-        stopSimulation();
         if(stopSimulation()) {
             future.cancel(false); executorService.shutdown();
             System.out.println("All the animals died!!!");
