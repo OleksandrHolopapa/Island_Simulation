@@ -32,7 +32,7 @@ public class Island {
             for (Location currentLocation : location) {
                 ConcurrentHashMap<String, List<Organism>> organismsInLocation = currentLocation.getOrganismsInLocation();
                 for (Map.Entry<String, List<Organism>> entry : organismsInLocation.entrySet()) {
-                    if(organismsOnIsland.containsKey(entry.getKey())){
+                    if (organismsOnIsland.containsKey(entry.getKey())) {
                         Integer i = organismsOnIsland.get(entry.getKey());
                         i += entry.getValue().size();
                         organismsOnIsland.put(entry.getKey(), i);
@@ -46,7 +46,7 @@ public class Island {
     public void showIslandStatistic() {
         Map<String, Integer> organismOnIsland = getPopulationOfDifferentOrganismsOnIsland();
         for (Map.Entry<String, Integer> entry : organismOnIsland.entrySet()) {
-            if(OrganismFactory.getOrganism(entry.getKey()) instanceof Animal)
+            if (OrganismFactory.getOrganism(entry.getKey()) instanceof Animal)
                 System.out.printf("  %-13s%8d\n", entry.getKey(), entry.getValue());
         }
     }

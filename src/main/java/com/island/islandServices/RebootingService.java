@@ -15,10 +15,11 @@ public class RebootingService implements Service {
     public void run(Location[][] locations) {
         try (ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
             Arrays.stream(locations)
-                    .forEach(locationArray->Arrays.stream(locationArray)
-                            .forEach(location -> executor.submit(()->rebootAnimalsStats(location))));
+                    .forEach(locationArray -> Arrays.stream(locationArray)
+                            .forEach(location -> executor.submit(() -> rebootAnimalsStats(location))));
             executor.shutdown();
-            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) throw new NotEnoughTimeToProcessException("RebootingService");
+            if (!executor.awaitTermination(10, TimeUnit.SECONDS))
+                throw new NotEnoughTimeToProcessException("RebootingService");
         } catch (NotEnoughTimeToProcessException e) {
             System.err.println(e.getMessage());
         } catch (InterruptedException e) {
@@ -26,11 +27,11 @@ public class RebootingService implements Service {
         }
     }
 
-    private void rebootAnimalsStats(Location location){
+    private void rebootAnimalsStats(Location location) {
         ConcurrentHashMap<String, List<Organism>> organismsInLocation = location.getOrganismsInLocation();
         for (List<Organism> value : organismsInLocation.values()) {
             for (Organism organism : value) {
-                if(organism instanceof Animal animal) {
+                if (organism instanceof Animal animal) {
                     animal.setAlreadyReproduced(false);
                     animal.getAlreadyMoved().set(false);
                 }

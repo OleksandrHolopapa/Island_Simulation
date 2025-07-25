@@ -18,11 +18,12 @@ public class RelocationService implements Service {
                     int x = i;
                     int y = j;
                     Location location = locations[i][j];
-                    executor.submit(()->startRelocation(locations, location, x, y));
+                    executor.submit(() -> startRelocation(locations, location, x, y));
                 }
             }
             executor.shutdown();
-            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) throw new NotEnoughTimeToProcessException("RelocationService");
+            if (!executor.awaitTermination(10, TimeUnit.SECONDS))
+                throw new NotEnoughTimeToProcessException("RelocationService");
         } catch (NotEnoughTimeToProcessException e) {
             System.err.println(e.getMessage());
         } catch (InterruptedException e) {
@@ -30,11 +31,11 @@ public class RelocationService implements Service {
         }
     }
 
-    private synchronized void startRelocation(Location[][] locations, Location currentLocation, int currentX, int currentY){
+    private synchronized void startRelocation(Location[][] locations, Location currentLocation, int currentX, int currentY) {
         ConcurrentHashMap<String, List<Organism>> organismsInLocation = currentLocation.getOrganismsInLocation();
         for (List<Organism> value : organismsInLocation.values()) {
-            for (int i = value.size()-1; i >= 0; i--) {
-                if(value.get(i) instanceof Animal animal) animal.move(locations, currentLocation, currentX, currentY);
+            for (int i = value.size() - 1; i >= 0; i--) {
+                if (value.get(i) instanceof Animal animal) animal.move(locations, currentLocation, currentX, currentY);
             }
         }
     }

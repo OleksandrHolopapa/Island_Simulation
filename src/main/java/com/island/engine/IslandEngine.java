@@ -19,21 +19,22 @@ public class IslandEngine {
         this.island = island;
     }
 
-    public void startSimulation(){
+    public void startSimulation() {
         island.startService(new InitialisationService());
         future = executorService.scheduleWithFixedDelay(this::runCircle, 0, 500, TimeUnit.MILLISECONDS);
     }
 
-    private void runCircle(){
+    private void runCircle() {
         island.startService(new FoodService());
         island.startService(new DeathService());
-        if(currentDay % 2 == 0) island.startService(new ReproduceService());
+        if (currentDay % 2 == 0) island.startService(new ReproduceService());
         island.startService(new RelocationService());
         island.startService(new RebootingService());
-        System.out.println("========= DAY №"+(currentDay++)+" ==========");
+        System.out.println("========= DAY №" + (currentDay++) + " ==========");
         island.showIslandStatistic();
-        if(stopSimulation()) {
-            future.cancel(false); executorService.shutdown();
+        if (stopSimulation()) {
+            future.cancel(false);
+            executorService.shutdown();
             System.out.println("All the animals died!!!");
         }
     }
@@ -44,7 +45,7 @@ public class IslandEngine {
             for (Location location : locations) {
                 ConcurrentHashMap<String, List<Organism>> organismsInLocation = location.getOrganismsInLocation();
                 for (List<Organism> value : organismsInLocation.values()) {
-                    if((!value.isEmpty()) && (value.getLast() instanceof Animal)) simulationStopped = false;
+                    if ((!value.isEmpty()) && (value.getLast() instanceof Animal)) simulationStopped = false;
                 }
             }
         }

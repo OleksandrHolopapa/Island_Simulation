@@ -15,22 +15,23 @@ public class FoodService implements Service {
     public void run(Location[][] locations) {
         try (ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
             Arrays.stream(locations)
-                    .forEach(locationArray->Arrays.stream(locationArray)
-                            .forEach(location -> executor.submit(()->timeToEat(location))));
+                    .forEach(locationArray -> Arrays.stream(locationArray)
+                            .forEach(location -> executor.submit(() -> timeToEat(location))));
             executor.shutdown();
-            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) throw new NotEnoughTimeToProcessException("FoodService");
+            if (!executor.awaitTermination(10, TimeUnit.SECONDS))
+                throw new NotEnoughTimeToProcessException("FoodService");
         } catch (NotEnoughTimeToProcessException e) {
             System.err.println(e.getMessage());
-        }catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void timeToEat(Location location){
+    private void timeToEat(Location location) {
         ConcurrentHashMap<String, List<Organism>> organismsInLocation = location.getOrganismsInLocation();
         for (List<Organism> organisms : organismsInLocation.values()) {
             for (Organism organism : organisms) {
-                if(organism instanceof Animal animal) animal.eat(organismsInLocation);
+                if (organism instanceof Animal animal) animal.eat(organismsInLocation);
             }
         }
     }

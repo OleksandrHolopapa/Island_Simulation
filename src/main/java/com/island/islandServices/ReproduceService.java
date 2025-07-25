@@ -15,16 +15,18 @@ public class ReproduceService implements Service {
     public void run(Location[][] locations) {
         try (ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
             Arrays.stream(locations)
-                    .forEach(locationArray->Arrays.stream(locationArray)
-                            .forEach(location -> executor.submit(()->timeToReproduce(location))));
+                    .forEach(locationArray -> Arrays.stream(locationArray)
+                            .forEach(location -> executor.submit(() -> timeToReproduce(location))));
             executor.shutdown();
-            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) throw new NotEnoughTimeToProcessException("ReproducedService");
+            if (!executor.awaitTermination(10, TimeUnit.SECONDS))
+                throw new NotEnoughTimeToProcessException("ReproducedService");
         } catch (NotEnoughTimeToProcessException e) {
             System.err.println(e.getMessage());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
+
     private void timeToReproduce(Location location) {
         ConcurrentHashMap<String, List<Organism>> organismsInLocation = location.getOrganismsInLocation();
         for (List<Organism> organisms : organismsInLocation.values()) {

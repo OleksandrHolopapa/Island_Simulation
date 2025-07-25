@@ -15,10 +15,11 @@ public class DeathService implements Service {
     public void run(Location[][] locations) {
         try (ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
             Arrays.stream(locations)
-                    .forEach(locationArray->Arrays.stream(locationArray)
-                            .forEach(location -> executor.submit(()->deathByStarvation(location))));
+                    .forEach(locationArray -> Arrays.stream(locationArray)
+                            .forEach(location -> executor.submit(() -> deathByStarvation(location))));
             executor.shutdown();
-            if(!executor.awaitTermination(10, TimeUnit.SECONDS)) throw new NotEnoughTimeToProcessException("DeathService");
+            if (!executor.awaitTermination(10, TimeUnit.SECONDS))
+                throw new NotEnoughTimeToProcessException("DeathService");
         } catch (NotEnoughTimeToProcessException e) {
             System.err.println(e.getMessage());
         } catch (InterruptedException e) {
@@ -26,12 +27,12 @@ public class DeathService implements Service {
         }
     }
 
-    private void deathByStarvation(Location location){
+    private void deathByStarvation(Location location) {
         ConcurrentHashMap<String, List<Organism>> organismsInLocation = location.getOrganismsInLocation();
         for (List<Organism> organisms : organismsInLocation.values()) {
-            for (int i = organisms.size()-1; i>=0; i--) {
+            for (int i = organisms.size() - 1; i >= 0; i--) {
                 Organism organism = organisms.get(i);
-                if((organism instanceof Animal animal)&&(animal.getWeight()<=0)) {
+                if ((organism instanceof Animal animal) && (animal.getWeight() <= 0)) {
                     organisms.remove(animal);
                 }
             }

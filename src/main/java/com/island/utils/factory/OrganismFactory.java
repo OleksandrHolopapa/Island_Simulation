@@ -6,9 +6,9 @@ import com.island.models.animals.predators.*;
 import com.island.models.plants.Grass;
 
 public class OrganismFactory {
-    public static Organism getOrganism(String animalSimpleName){
+    public static Organism getOrganism(String animalSimpleName) {
         Organisms organism = Organisms.valueOf(animalSimpleName.toUpperCase());
-        return switch (organism){
+        return switch (organism) {
             case WOLF -> new Wolf();
             case FOX -> new Fox();
             case RABBIT -> new Rabbit();
